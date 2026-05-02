@@ -1,0 +1,28 @@
+name: e_c_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.2.4
+  bottom_nav_bar: ^1.0.3
+  google_nav_bar: ^5.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/Vector1.svg
+    - assets/category.svg
+    - assets/fe719fa1e2921309a5540b5cc15fe195-removebg-preview.png
+    - assets/1.8498js261.rdbr.radical-brown_1-removebg-preview.png
+    - assets/bomber-jacket-removebg-preview.png
