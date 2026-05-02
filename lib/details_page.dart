@@ -16,7 +16,7 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   // int _selectedSize = 1;
   // int _selectedColor = 0;
   bool _isWishlisted = false;
@@ -27,14 +27,20 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   @override
   void initState() {
+    animations1();
     super.initState();
+  }
+
+  //bounceInOut
+
+  void animations1() {
     _fabController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
     _fabAnimation = CurvedAnimation(
       parent: _fabController,
-      curve: Curves.elasticOut,
+      curve: Curves.bounceInOut,
     );
     _fabController.forward();
   }
@@ -292,12 +298,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      widget.product.price,
-                      style: const TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        color: kAccent,
+                    ScaleTransition(
+                      scale: _fabAnimation,
+                      child: Text(
+                        widget.product.price,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          color: kAccent,
+                        ),
                       ),
                     ),
                     Text(

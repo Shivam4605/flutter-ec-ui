@@ -122,7 +122,38 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class _HomeUI extends StatelessWidget {
+class _HomeUI extends StatefulWidget {
+  @override
+  State<_HomeUI> createState() => _HomeUIState();
+}
+
+class _HomeUIState extends State<_HomeUI> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    animations();
+    super.initState();
+  }
+
+  void animations() {
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -240,7 +271,10 @@ class _HomeUI extends StatelessWidget {
 
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (context, index) => _ProductCard(product: _products[index]),
+              (context, index) => FadeTransition(
+                opacity: _fadeAnimation,
+                child: _ProductCard(product: _products[index]),
+              ),
               childCount: _products.length,
             ),
           ),
@@ -425,8 +459,12 @@ class _ProductCardState extends State<_ProductCard> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => ProductDetailPage(product: widget.product),
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) =>
+                ProductDetailPage(product: widget.product),
+            transitionsBuilder: (context, animation, _, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
           ),
         );
       },
