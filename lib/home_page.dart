@@ -133,11 +133,12 @@ class _HomeUIState extends State<_HomeUI> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    animations();
+    animations1();
+
     super.initState();
   }
 
-  void animations() {
+  void animations1() {
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -151,6 +152,7 @@ class _HomeUIState extends State<_HomeUI> with SingleTickerProviderStateMixin {
   @override
   void dispose() {
     _controller.dispose();
+
     super.dispose();
   }
 
@@ -450,8 +452,35 @@ class _ProductCard extends StatefulWidget {
   State<_ProductCard> createState() => _ProductCardState();
 }
 
-class _ProductCardState extends State<_ProductCard> {
+class _ProductCardState extends State<_ProductCard>
+    with SingleTickerProviderStateMixin {
   bool _isWishlisted = false;
+  late AnimationController _wishController;
+  late Animation<double> _scaleAnim;
+
+  @override
+  void initState() {
+    animation2();
+    super.initState();
+  }
+
+  void animation2() {
+    _wishController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+
+    _scaleAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.3), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1.3, end: 1.0), weight: 50),
+    ]).animate(CurvedAnimation(parent: _wishController, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _wishController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -519,27 +548,44 @@ class _ProductCardState extends State<_ProductCard> {
                 top: 16,
                 right: 16,
                 child: GestureDetector(
-                  onTap: () => setState(() => _isWishlisted = !_isWishlisted),
-                  child: Container(
-                    width: 38,
-                    height: 38,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 3),
+                  onTap: () => setState(() {
+                    _isWishlisted = !_isWishlisted;
+                    _wishController.forward(from: 0);
+                  }),
+                  child: AnimatedBuilder(
+                    animation: _wishController,
+                    builder: (context, child) =>
+                        Transform.scale(scale: _scaleAnim.value, child: child),
+                    child: Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: _isWishlisted
+                                ? Colors.redAccent.withOpacity(0.4)
+                                : Colors.black.withOpacity(0.1),
+                            blurRadius: _isWishlisted ? 12 : 8,
+                          ),
+                        ],
+                      ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        key: ValueKey<bool>(_isWishlisted),
+                        transitionBuilder: (child, animation) =>
+                            ScaleTransition(scale: animation, child: child),
+                        child: Icon(
+                          _isWishlisted
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          color: _isWishlisted
+                              ? Colors.redAccent
+                              : Colors.black38,
+                          size: 18,
                         ),
-                      ],
-                    ),
-                    child: Icon(
-                      _isWishlisted
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
-                      color: _isWishlisted ? Colors.redAccent : Colors.black38,
-                      size: 18,
+                      ),
                     ),
                   ),
                 ),

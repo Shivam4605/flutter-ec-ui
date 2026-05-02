@@ -24,14 +24,15 @@ class _ProductDetailPageState extends State<ProductDetailPage>
 
   late AnimationController _fabController;
   late Animation<double> _fabAnimation;
+  late AnimationController _wishController;
+  late Animation<double> _scaleAnim;
 
   @override
   void initState() {
     animations1();
+    animation2();
     super.initState();
   }
-
-  //bounceInOut
 
   void animations1() {
     _fabController = AnimationController(
@@ -45,9 +46,22 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     _fabController.forward();
   }
 
+  void animation2() {
+    _wishController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+    );
+
+    _scaleAnim = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.3), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1.3, end: 1.0), weight: 50),
+    ]).animate(CurvedAnimation(parent: _wishController, curve: Curves.easeOut));
+  }
+
   @override
   void dispose() {
     _fabController.dispose();
+    _wishController.dispose();
     super.dispose();
   }
 
@@ -105,26 +119,41 @@ class _ProductDetailPageState extends State<ProductDetailPage>
         Padding(
           padding: const EdgeInsets.only(right: 12, top: 10, bottom: 10),
           child: GestureDetector(
-            onTap: () => setState(() => _isWishlisted = !_isWishlisted),
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+            onTap: () => setState(() {
+              _isWishlisted = !_isWishlisted;
+              _wishController.forward(from: 0);
+            }),
+            child: AnimatedBuilder(
+              animation: _wishController,
+              builder: (context, child) =>
+                  Transform.scale(scale: _scaleAnim.value, child: child),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: _isWishlisted
+                          ? Colors.redAccent.withOpacity(0.4)
+                          : Colors.black.withOpacity(0.1),
+                      blurRadius: _isWishlisted ? 12 : 8,
+                    ),
+                  ],
+                ),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, anim) =>
+                      ScaleTransition(scale: anim, child: child),
+                  key: ValueKey(_isWishlisted),
+                  child: Icon(
+                    _isWishlisted
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                    color: _isWishlisted ? Colors.redAccent : kDark,
+                    size: 20,
                   ),
-                ],
-              ),
-              child: Icon(
-                _isWishlisted
-                    ? Icons.favorite_rounded
-                    : Icons.favorite_border_rounded,
-                color: _isWishlisted ? Colors.redAccent : kDark,
-                size: 20,
+                ),
               ),
             ),
           ),
