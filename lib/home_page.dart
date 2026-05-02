@@ -16,20 +16,28 @@ class Product {
   final String price;
   final double rating;
   final String imagePath;
-  final Color tagColor;
-
-  const Product({
+  Color tagColor;
+  final List<String> sizes;
+  final List<Color> colors;
+  Product({
     required this.name,
     required this.subtitle,
     required this.price,
     required this.rating,
     required this.imagePath,
     required this.tagColor,
+    this.sizes = const ["XS", "S", "M", "L", "XL"],
+    this.colors = const [
+      Color(0xFFE8D5B7),
+      Color(0xFF1A1A2E),
+      Color(0xFF795548),
+      Color(0xFF455A64),
+    ],
   });
 }
 
 final List<Product> _products = [
-  const Product(
+  Product(
     name: "Avoine Hooded",
     subtitle: "Quilted Jacket",
     price: "\$1,500",
@@ -37,7 +45,7 @@ final List<Product> _products = [
     imagePath: "assets/fe719fa1e2921309a5540b5cc15fe195-removebg-preview.png",
     tagColor: Color(0xFFE8D5B7),
   ),
-  const Product(
+  Product(
     name: "Hooded Metallic",
     subtitle: "Shell Jacket",
     price: "\$1,050",
@@ -45,7 +53,7 @@ final List<Product> _products = [
     imagePath: "assets/fe719fa1e2921309a5540b5cc15fe195-removebg-preview.png",
     tagColor: Color(0xFFD4C5B0),
   ),
-  const Product(
+  Product(
     name: "Urban Street",
     subtitle: "Puffer Coat",
     price: "\$890",

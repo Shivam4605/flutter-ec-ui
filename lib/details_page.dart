@@ -17,8 +17,7 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage>
     with TickerProviderStateMixin {
-  // int _selectedSize = 1;
-  // int _selectedColor = 0;
+  int _selectedSize = 1;
   bool _isWishlisted = false;
   int _quantity = 1;
 
@@ -26,11 +25,14 @@ class _ProductDetailPageState extends State<ProductDetailPage>
   late Animation<double> _fabAnimation;
   late AnimationController _wishController;
   late Animation<double> _scaleAnim;
+  late AnimationController _textAnimationController;
+  late Animation<double> _textAnimation;
 
   @override
   void initState() {
     animations1();
     animation2();
+    animations2();
     super.initState();
   }
 
@@ -41,9 +43,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
     );
     _fabAnimation = CurvedAnimation(
       parent: _fabController,
-      curve: Curves.bounceInOut,
+      curve: Curves.easeInOutCubicEmphasized,
     );
     _fabController.forward();
+  }
+
+  void animations2() {
+    _textAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _textAnimation = CurvedAnimation(
+      parent: _textAnimationController,
+      curve: Curves.bounceOut,
+    );
+    _textAnimationController.forward();
   }
 
   void animation2() {
@@ -328,7 +342,7 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     ScaleTransition(
-                      scale: _fabAnimation,
+                      scale: _textAnimation,
                       child: Text(
                         widget.product.price,
                         style: const TextStyle(
@@ -364,43 +378,46 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             ),
             const SizedBox(height: 12),
 
-            // Row(
-            //   children: widget.product.colors.asMap().entries.map((e) {
-            //     final selected = e.key == _selectedColor;
-            //     return GestureDetector(
-            //       onTap: () => setState(() => _selectedColor = e.key),
-            //       child: AnimatedContainer(
-            //         duration: const Duration(milliseconds: 200),
-            //         margin: const EdgeInsets.only(right: 10),
-            //         width: 36,
-            //         height: 36,
-            //         decoration: BoxDecoration(
-            //           color: e.value,
-            //           shape: BoxShape.circle,
-            //           border: Border.all(
-            //             color: selected ? kAccent : Colors.transparent,
-            //             width: 2.5,
-            //           ),
-            //           boxShadow: [
-            //             BoxShadow(
-            //               color: e.value.withOpacity(0.4),
-            //               blurRadius: 8,
-            //               offset: const Offset(0, 3),
-            //             ),
-            //           ],
-            //         ),
-            //         child: selected
-            //             ? const Icon(
-            //                 Icons.check_rounded,
-            //                 color: Colors.white,
-            //                 size: 18,
-            //               )
-            //             : null,
-            //       ),
-            //     );
-            //   }).toList(),
-            // ),
-            // const SizedBox(height: 24),
+            Row(
+              children: widget.product.colors.asMap().entries.map((e) {
+                final selected =
+                    e.key ==
+                    widget.product.colors.indexOf(widget.product.tagColor);
+                return GestureDetector(
+                  onTap: () =>
+                      setState(() => widget.product.tagColor = e.value),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.only(right: 10),
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: e.value,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: selected ? kAccent : Colors.transparent,
+                        width: 2.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: e.value.withOpacity(0.4),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: selected
+                        ? const Icon(
+                            Icons.check_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          )
+                        : null,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -424,46 +441,46 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             ),
             const SizedBox(height: 12),
 
-            // Row(
-            //   children: widget.product.sizes.asMap().entries.map((e) {
-            //     final selected = e.key == _selectedSize;
-            //     return GestureDetector(
-            //       onTap: () => setState(() => _selectedSize = e.key),
-            //       child: AnimatedContainer(
-            //         duration: const Duration(milliseconds: 200),
-            //         margin: const EdgeInsets.only(right: 10),
-            //         width: 52,
-            //         height: 52,
-            //         decoration: BoxDecoration(
-            //           color: selected ? kDark : Colors.white,
-            //           borderRadius: BorderRadius.circular(14),
-            //           border: Border.all(
-            //             color: selected ? kDark : Colors.black.withOpacity(0.1),
-            //           ),
-            //           boxShadow: selected
-            //               ? [
-            //                   BoxShadow(
-            //                     color: kDark.withOpacity(0.3),
-            //                     blurRadius: 10,
-            //                     offset: const Offset(0, 4),
-            //                   ),
-            //                 ]
-            //               : [],
-            //         ),
-            //         child: Center(
-            //           child: Text(
-            //             e.value,
-            //             style: TextStyle(
-            //               color: selected ? Colors.white : kDark,
-            //               fontWeight: FontWeight.w700,
-            //               fontSize: 14,
-            //             ),
-            //           ),
-            //         ),
-            //       ),
-            //     );
-            //   }).toList(),
-            // ),
+            Row(
+              children: widget.product.sizes.asMap().entries.map((e) {
+                bool selected = e.key == _selectedSize;
+                return InkWell(
+                  onTap: () => setState(() => _selectedSize = e.key),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.only(right: 10),
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      color: selected ? kDark : Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: selected ? kDark : Colors.black.withOpacity(0.1),
+                      ),
+                      boxShadow: selected
+                          ? [
+                              BoxShadow(
+                                color: kDark.withOpacity(0.3),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ]
+                          : [],
+                    ),
+                    child: Center(
+                      child: Text(
+                        e.value,
+                        style: TextStyle(
+                          color: selected ? Colors.white : kDark,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
             const SizedBox(height: 24),
 
             Row(
@@ -820,34 +837,3 @@ class _ReviewCard extends StatelessWidget {
     );
   }
 }
-
-// Navigator.push(
-//   context,
-//   MaterialPageRoute(
-//     builder: (_) => ProductDetailPage(
-//       product: ProductDetail(
-//         name: "Avoine Hooded",
-//         subtitle: "Quilted Jacket",
-//         brand: "ZelOx",
-//         price: "\$1,500",
-//         originalPrice: "\$2,100",
-//         rating: 4.7,
-//         reviewCount: 128,
-//         imagePath: "assets/fe719fa1e2921309a5540b5cc15fe195-removebg-preview.png",
-//         bgColor: Color(0xFFE8D5B7),
-//         description:
-//             "The Avoine Hooded Quilted Jacket combines warmth and luxury. "
-//             "Crafted from premium materials with a water-resistant finish, "
-//             "this jacket is perfect for the urban explorer who demands both "
-//             "style and function in every season.",
-//         sizes: ["XS", "S", "M", "L", "XL"],
-//         colors: [
-//           Color(0xFFE8D5B7),
-//           Color(0xFF1A1A2E),
-//           Color(0xFF795548),
-//           Color(0xFF455A64),
-//         ],
-//       ),
-//     ),
-//   ),
-// );
