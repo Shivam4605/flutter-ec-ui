@@ -10,7 +10,7 @@ class ProductDetailPage extends StatefulWidget {
   final Product product;
 
   const ProductDetailPage({super.key, required this.product});
-
+  
   @override
   State<ProductDetailPage> createState() => _ProductDetailPageState();
 }
